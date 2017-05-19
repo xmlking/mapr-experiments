@@ -15,7 +15,8 @@ Highlights of this application are:
 ### Running
 ```bash
 gradle :mapr-db-ojai:bootRun
-./gradlew :mapr-db-ojai:bootRun
+gradle :mapr-streams-websocket:bootRun
+ 
 ```
 ### Testing
 ```bash

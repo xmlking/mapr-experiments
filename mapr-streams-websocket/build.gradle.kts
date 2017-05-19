@@ -59,6 +59,6 @@ dependencies {
 }
 
 configurations.all {
-    exclude("org.slf4j:slf4j-log4j12")
-    exclude("log4j:log4j")
+    exclude("log4j","log4j")
+    exclude("org.slf4j","slf4j-log4j12")
 }
