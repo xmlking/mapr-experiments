@@ -40,7 +40,7 @@ noArg {
 }
 
 dependencies {
-//    compile(project(":mapr-commons"))
+    compile(project(":mapr-commons"))
     compile(kotlinModule("stdlib"))
     compile(kotlinModule("reflect"))
 

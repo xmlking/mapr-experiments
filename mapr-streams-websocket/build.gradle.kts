@@ -39,10 +39,10 @@ noArg {
 }
 
 dependencies {
+    compile(project(":mapr-commons"))
     compile(kotlinModule("stdlib"))
     compile(kotlinModule("reflect"))
 
-    compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework.boot:spring-boot-starter-webflux") {
         exclude(module = "hibernate-validator")
     }

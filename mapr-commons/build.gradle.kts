@@ -14,12 +14,7 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion")
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
     }
-}
-
-apply {
-    plugin("org.springframework.boot")
 }
 
 plugins {
@@ -28,9 +23,14 @@ plugins {
 
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
+    id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
+//    id("org.jetbrains.kotlin.plugin.jpa"") version kotlinVersion
     id("io.spring.dependency-management") version springDependencyManagement
 }
 
+noArg {
+    annotation("corg.xmlking.mapr.Quote")
+}
 
 dependencies {
     compile(kotlinModule("stdlib"))
