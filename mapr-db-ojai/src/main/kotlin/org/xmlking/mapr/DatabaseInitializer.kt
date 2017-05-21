@@ -1,6 +1,6 @@
 package org.xmlking.mapr
 
-import org.xmlking.mapr.repository.UserRepository
+import org.xmlking.mapr.UserRepository
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
 

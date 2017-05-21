@@ -4,18 +4,17 @@ val reactorKotlinExtensions by project
 val springDependencyManagement by project
 val maprVersion by project
 val maprKafkaVersion by project
+val springKafkaVersion by project
 
 buildscript {
     val kotlinVersion = "1.1.2-2"
-    val springBootVersion = "2.0.0.BUILD-SNAPSHOT"
+    val springBootVersion = "2.0.0.M1"
 
     repositories {
         mavenCentral()
-        maven { setUrl("https://repo.spring.io/snapshot") }
         maven { setUrl("https://repo.spring.io/milestone") }
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion")
         classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
     }
 }
@@ -35,20 +34,28 @@ plugins {
 }
 
 noArg {
-    annotation("org.xmlking.mapr.model.Event")
+    annotation("com.my.Annotation")
 }
 
 dependencies {
     compile(project(":mapr-commons"))
-    compile(kotlinModule("stdlib"))
+    compile(kotlinModule("stdlib-jre8"))
     compile(kotlinModule("reflect"))
 
     compile("org.springframework.boot:spring-boot-starter-webflux") {
         exclude(module = "hibernate-validator")
     }
     compileOnly("org.springframework:spring-context-indexer")
-    compileOnly("com.mapr.streams:mapr-streams:$maprVersion")
-    compile("org.apache.kafka:kafka-clients:$maprKafkaVersion")
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile("org.webjars:webjars-locator:0.32")
+    compile("org.webjars:sockjs-client:1.1.2")
+    compile("org.webjars:stomp-websocket:2.3.3")
+    compile("org.webjars:bootstrap:4.0.0-alpha.6-1")
+    compile("org.webjars:jquery:3.2.0")
+
+//    compileOnly("com.mapr.streams:mapr-streams:$maprVersion")
+//    compile("org.apache.kafka:kafka-clients:$maprKafkaVersion")
+    compile("org.springframework.kafka:spring-kafka")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 
     compile("io.projectreactor:reactor-kotlin-extensions:$reactorKotlinExtensions")

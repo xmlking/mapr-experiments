@@ -5,54 +5,66 @@ import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.body
 
-import org.xmlking.mapr.repository.UserRepository
-import org.xmlking.mapr.model.User
+import org.xmlking.mapr.UserRepository
+import org.xmlking.mapr.User
+import org.xmlking.mapr.json
+import reactor.core.publisher.Mono
+import org.apache.commons.lang.StringUtils.defaultIfEmpty
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.PutMapping
+import org.apache.commons.lang.StringUtils.defaultIfEmpty
+import java.util.UUID
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.PostMapping
+import com.sun.deploy.util.SearchPath.findOne
+import org.springframework.web.bind.annotation.GetMapping
+import reactor.core.publisher.Flux
+
 
 @CrossOrigin(maxAge = 3600)
 @RestController
-@RequestMapping("/api")
-class UserController(val repository: UserRepository,
-                     val env: Environment) {
+@RequestMapping("/api2/users")
+class UserController(val repository: UserRepository) {
 
     @CrossOrigin("http://localhost:4200")
-    @GetMapping("/users")
-    fun getUsers() = repository.list()
+    @GetMapping
+    fun list() = repository.list()
+
+    @GetMapping(path = arrayOf("/startingwith/{letter}"))
+    fun findAllByFirstNameLike(
+            @PathVariable("letter") letter: String): Flux<User> {
+        return repository.findAllByFirstNameLike(letter)
+    }
 
     @CrossOrigin
-    @GetMapping("/user/{userId}")
-    fun getUser(@PathVariable userId: String): ResponseEntity<*> {
-
-        println("userId ********" + userId)
-        val user = repository.get(userId) ?: return ResponseEntity("No User found for ID " + userId, HttpStatus.NOT_FOUND)
-
-        return ResponseEntity(user, HttpStatus.OK)
+    @GetMapping(path = arrayOf("/{id}"))
+    operator fun get(@PathVariable("id") userId: String): Mono<ResponseEntity<User>> {
+        return repository.findOne(userId)
+                .map { ResponseEntity(it, HttpStatus.OK) }
+                .defaultIfEmpty(ResponseEntity(HttpStatus.NOT_FOUND))
     }
 
-    @PostMapping(value = "/createuser")
-    fun createUser(@RequestBody user: User): ResponseEntity<*> {
-
-        repository.create(user)
-
-        return ResponseEntity(user, HttpStatus.OK)
+    @PostMapping
+    fun create(@RequestBody user: User): Mono<ResponseEntity<User>> {
+        return repository.create(user)
+                .map({ savedUser -> ResponseEntity(savedUser, HttpStatus.CREATED) })
     }
 
-    @DeleteMapping("/deleteuser/{userId}")
-    fun deleteCustomer(@PathVariable userId: String): ResponseEntity<*> {
-
-        if (null == repository.delete(userId)) {
-            return ResponseEntity("No User found for ID " + userId, HttpStatus.NOT_FOUND)
-        }
-
-        return ResponseEntity(userId, HttpStatus.OK)
-
+    @DeleteMapping(path = arrayOf("/{id}"))
+    fun delete(@PathVariable("id") userId: String): Mono<ResponseEntity<User>> {
+        return repository.delete(userId)
+                .map { ResponseEntity(it, HttpStatus.ACCEPTED) }
+                .defaultIfEmpty(ResponseEntity(HttpStatus.NOT_FOUND))
     }
 
-    @PutMapping("/updateuser/{userId}")
-    fun updateCustomer(@PathVariable userId: String, @RequestBody user: User): ResponseEntity<*> {
-
-        val status = repository.update(user)
-
-        return ResponseEntity(status, HttpStatus.OK)
+    @PutMapping
+    fun update(@RequestBody user: User): Mono<ResponseEntity<User>> {
+        return repository.update(user)
+                .map({ savedUser -> ResponseEntity(savedUser, HttpStatus.CREATED) })
+                .defaultIfEmpty(ResponseEntity(HttpStatus.NOT_FOUND))
     }
 }

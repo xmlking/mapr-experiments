@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Spring WebFlux Streaming</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/4.0.0-alpha.6-1/css/bootstrap.min.css"/>
+    <script type="text/javascript">
+
+        var colAdps = [{ y: 0.0 }];
+        var colBdps = [{ y: 0.0 }];
+        var stompClient = null;
+        var dataLength = 500;
+        var colA;
+        var colB;
+
+        window.onload = function () {
+
+            var socket = new SockJS('/graphdata-websocket');
+
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, function(frame) {
+
+                stompClient.subscribe('/topic/data', function(message) {
+
+                    //colAdps.length = 0;
+                    //colBdps.length = 0;
+
+                    colA = JSON.parse(message.body).columnA;
+                    colB = JSON.parse(message.body).columnB;
+
+                    for (i = 0; i < colA.length; i++) {
+                        colAdps.push({
+                            y: colA[i]
+                        });
+                        colBdps.push({
+                            y: colB[i]
+                        });
+                    }
+                    drawChart(colAdps,colBdps);
+                });
+
+            });
+
+
+            var drawChart = function(colAdps,colBdps){
+                var chart = new CanvasJS.Chart("chartContainer",{
+                    animationEnabled: true, animationDuration: 10,zoomEnabled: true,
+                    title:{ text: "EKG Real-time Reconstruction"},
+                    /* axisY:{
+                          lineThickness:0,
+                          tickThickness:0,
+                          valueFormatString:" ",//space
+                          }, */
+                    axisX:{
+                        lineThickness:0,
+                        tickThickness:0,
+                        valueFormatString:" ",//space
+                    },
+                    data: [
+                        {
+                            type: "line",
+                            connectNullData: true,
+                            dataPoints: colAdps
+                        },
+                        {
+                            type: "line",
+                            connectNullData: true,
+                            dataPoints: colBdps
+                        }
+                    ]
+                });
+
+                if (colAdps.length > dataLength)
+                {
+                    colAdps.shift();
+                    colBdps.shift();
+
+                }
+                chart.render();
+            }
+
+            /*  		var updateInterval = 1000;
+                    setInterval(function(){drawChart(colAdps,colBdps)}, updateInterval);  */
+
+        }
+    </script>
+    <script type="text/javascript" src="/webjars/jquery/3.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/4.0.0-alpha.6-1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
+    <script type="text/javascript" src="/webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
+
+    <!--<script type="text/javascript" src="js/canvasjs.min.js"></script>-->
+</head>
+<body>
+<div id="chartContainer" style="height: 300px; width: 100%;">
+</div>
+</body>
+</html>

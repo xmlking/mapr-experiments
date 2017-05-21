@@ -19,3 +19,25 @@ To run the producer
 java -jar live-mapr-streaming-producer-0.1.jar --spring.config.location=/home/mapr/live-mapr-streaming-producer/application.properties
 
 check by opening the browser http://localhost:8099 
+
+### Setup
+Install and fire up the Sandbox using the instructions here: http://maprdocs.mapr.com/home/SandboxHadoop/c_sandbox_overview.html. 
+https://github.com/caroljmcdonald/live-mapr-streaming-websocket
+
+### Building 
+```bash
+./gradlew  :mapr-streams-websocket:build
+# build docker image
+./gradlew  :mapr-streams-websocket:docker
+```
+
+### Run 
+> start kafka http://docs.confluent.io/current/quickstart.html
+```bash
+./gradlew  :mapr-streams-websocket:bootRun
+# build docker image
+./gradlew  :mapr-streams-websocket:docker
+```
+
+> send message 
+http://localhost:9000/send?key=myKey&message=myMessage

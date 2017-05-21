@@ -1,6 +1,15 @@
 package org.xmlking.mapr
 
-import java.math.BigDecimal
-import java.time.Instant
+data class User(
+        val id: String,
+        val firstName: String,
+        val lastName: String,
+        val email: String?,
+        val role: Role = Role.USER,
+        val age: Int?
+)
 
-data class Quote(val ticker: String, val price: BigDecimal, val instant: Instant = Instant.now())
+enum class Role {
+    STAFF,
+    USER
+}

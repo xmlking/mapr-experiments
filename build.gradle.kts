@@ -29,7 +29,6 @@ allprojects {
         gradleScriptKotlin()
         mavenCentral()
         maven { setUrl("https://repo.spring.io/milestone") }
-        maven { setUrl("https://repo.spring.io/snapshot") }
         maven { setUrl("http://repository.mapr.com/nexus/content/groups/mapr-public/") }
         maven { setUrl("http://repository.mapr.com/maven/") }
     }
@@ -37,8 +36,11 @@ allprojects {
 
 // Configure all KotlinCompile tasks on each sub-project
 subprojects {
+
     tasks.withType<KotlinCompile> {
         println("Configuring $name in project ${project.name}...")
+        sourceCompatibility = "1.8" // JavaVersion.VERSION_1_8
+        targetCompatibility = "1.8"
         kotlinOptions {
             jvmTarget = "1.8"
         }

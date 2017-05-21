@@ -3,20 +3,6 @@ val springBootVersion by project
 val reactorKotlinExtensions by project
 val springDependencyManagement by project
 
-buildscript {
-    val kotlinVersion = "1.1.2-2"
-    val springBootVersion = "2.0.0.BUILD-SNAPSHOT"
-
-    repositories {
-        mavenCentral()
-        maven { setUrl("https://repo.spring.io/snapshot") }
-        maven { setUrl("https://repo.spring.io/milestone") }
-    }
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion")
-    }
-}
-
 plugins {
     val kotlinVersion = "1.1.2-2"
     val springDependencyManagement = "1.0.2.RELEASE"
@@ -29,10 +15,10 @@ plugins {
 }
 
 noArg {
-    annotation("corg.xmlking.mapr.Quote")
+    annotation("com.my.Annotation")
 }
 
 dependencies {
-    compile(kotlinModule("stdlib"))
+    compile(kotlinModule("stdlib-jre8"))
     compile(kotlinModule("reflect"))
 }

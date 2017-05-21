@@ -1,4 +1,4 @@
-package org.xmlking.mapr.util
+package org.xmlking.mapr
 
 import org.springframework.boot.SpringApplication
 import org.springframework.http.MediaType.*

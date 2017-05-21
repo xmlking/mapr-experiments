@@ -7,15 +7,13 @@ val maprOjaiVersion by project
 
 buildscript {
     val kotlinVersion = "1.1.2-2"
-    val springBootVersion = "2.0.0.BUILD-SNAPSHOT"
+    val springBootVersion = "2.0.0.M1"
 
     repositories {
         mavenCentral()
-        maven { setUrl("https://repo.spring.io/snapshot") }
         maven { setUrl("https://repo.spring.io/milestone") }
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion")
         classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
     }
 }
@@ -36,12 +34,12 @@ plugins {
 }
 
 noArg {
-    annotation("org.xmlking.mapr.model.Event")
+    annotation("com.my.Annotation")
 }
 
 dependencies {
     compile(project(":mapr-commons"))
-    compile(kotlinModule("stdlib"))
+    compile(kotlinModule("stdlib-jre8"))
     compile(kotlinModule("reflect"))
 
     compile("org.springframework.boot:spring-boot-starter-webflux") {

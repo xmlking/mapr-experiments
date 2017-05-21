@@ -1,4 +1,4 @@
-package org.xmlking.mapr.util
+package org.xmlking.mapr
 
 import java.io.IOException
 

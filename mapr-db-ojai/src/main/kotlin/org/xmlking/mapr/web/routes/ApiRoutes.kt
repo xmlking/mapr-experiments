@@ -1,6 +1,6 @@
 package org.xmlking.mapr.web.routes
 
-import org.xmlking.mapr.web.handler.*
+import org.xmlking.mapr.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
@@ -17,11 +17,12 @@ class ApiRoutes(val userHandler: UserHandler) {
 
             // users
             "/users".nest {
-                GET("/", userHandler::getUsers)
-                GET("/{login}", userHandler::getUser)
+                GET("/", userHandler::list)
+                GET("/{userId}", userHandler::get)
+                POST("/", userHandler::create)
+                PUT("/", userHandler::update)
+                DELETE("/{id}", userHandler::delete)
             }
-
-
         }
     }
 }

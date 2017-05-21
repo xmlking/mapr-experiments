@@ -1,29 +1,29 @@
-package org.xmlking.mapr.repository
+package org.xmlking.mapr
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.mapr.db.MapRDB
 import com.mapr.db.Table
-import org.xmlking.mapr.model.Role
-import org.xmlking.mapr.model.User
-import org.springframework.core.io.ClassPathResource
-import org.springframework.stereotype.Repository
-import reactor.core.publisher.Mono
-import org.xmlking.mapr.util.*
+import com.mapr.db.exceptions.DBException
+import org.ojai.DocumentStream
+import org.ojai.store.QueryCondition.Op.EQUAL
 import org.slf4j.LoggerFactory
-import org.springframework.core.env.Environment
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Repository
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.io.IOException
-import java.util.ArrayList
+import java.time.Instant
+import java.util.*
 import javax.annotation.PostConstruct
 
 
 @Repository
-class UserRepository(val env: Environment,
+class UserRepository(@Value("\${user.table.name}") val userTableName: String,
                      val dbHelper: MapRJsonDBHelper) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
-    private var template: Table? = null
+    private lateinit var userTable: Table
+
     fun initData() {
 //        if (count().block() == 0L) {
 //            val usersResource = ClassPathResource("data/users.json")
@@ -36,7 +36,7 @@ class UserRepository(val env: Environment,
     @PostConstruct
     fun getTableHandler() {
         try {
-            template = dbHelper.getTable(env.getProperty("user.table.name"))
+            userTable = dbHelper.getTable(userTableName)
         } catch (e: IOException) {
             // TODO Auto-generated catch block
             e.printStackTrace()
@@ -44,49 +44,72 @@ class UserRepository(val env: Environment,
 
     }
 
-    fun list(): List<User> {
+    fun list(): Flux<User> {
         val userList = ArrayList<User>()
-        val rs = template!!.find()
-        val itrs = rs.iterator()
-        while (itrs.hasNext()) {
-            userList.add(itrs.next().toJavaBean(User::class.java))
+        userTable.find().use { documentStream: DocumentStream ->
+            documentStream.mapTo(userList) { it.toJavaBean(User::class.java) }
         }
-        rs.close()
-        return userList
+        return Flux.fromIterable(userList)
     }
 
-    operator fun get(id: String): User {
-        val user = template!!.findById(id).toJavaBean(User::class.java)
-        return user
+    fun listLazy(): Flux<User> {
+        val rs = userTable.find()
+
+        return Flux.generate({ rs.iterator() }) { s, o ->
+
+            if (s.hasNext()) {
+                o.next(s.next().toJavaBean(User::class.java));
+            }
+            else {
+                o.complete()
+                rs.close()
+            }
+            s
+        }
     }
 
-    fun create(user: User): String {
+    fun findAllByFirstNameLike(letter: String): Flux<User> {
+        val condition = MapRDB.newCondition()
+                .or()
+                .`is`("firstName", EQUAL, letter)
+                .close()
+                .build();
+        val userList = ArrayList<User>()
+        userTable.find(condition).use { documentStream: DocumentStream ->
+            documentStream.mapTo(userList) { it.toJavaBean(User::class.java) }
+        }
+        return Flux.fromIterable(userList)
+    }
+
+    fun findOne(id: String): Mono<User> {
+        val user = try { userTable.findById(id).toJavaBean(User::class.java) } catch (e: DBException) { null }
+        return Mono.just(user)
+    }
+
+    fun create(user: User): Mono<User> {
         val document = MapRDB.newDocument(user)
-        template!!.insertOrReplace(document)
-        template!!.flush()
-        return "user created successfully"
+        userTable.insertOrReplace(document)
+        userTable.flush()
+        return Mono.just(document.toJavaBean(User::class.java))
     }
 
-    fun delete(userId: String): User? {
-        val userDocument = template!!.findById(userId)
+    fun delete(userId: String): Mono<User> {
+        val userDocument = userTable.findById(userId)
         if(userDocument != null) {
-            template!!.delete(userDocument)
-            template!!.flush()
-            return userDocument.toJavaBean(User::class.java)
+            userTable.delete(userDocument)
+            userTable.flush()
         }
-        return null;
+        return Mono.just(userDocument?.toJavaBean(User::class.java))
     }
 
-    fun update(user: User): String? {
-        val userDocument = template!!.findById(user.id)
+    fun update(user: User): Mono<User> {
+        val userDocument = userTable.findById(user.id)
         if (userDocument != null) {
             val document = MapRDB.newDocument(user)
-            template!!.insertOrReplace(document)
-            template!!.flush()
-            return "Update Success"
-        } else {
-            return null
+            userTable.insertOrReplace(document)
+            userTable.flush()
         }
+        return Mono.just(userDocument?.toJavaBean(User::class.java))
     }
 
 }

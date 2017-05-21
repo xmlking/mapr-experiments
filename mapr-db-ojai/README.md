@@ -23,3 +23,10 @@ java -jar retail.jar --spring.config.location=/absolutepath/application.properti
 
 Happy Learning
 
+
+### Building 
+```bash
+./gradlew  :mapr-db-ojai:build -x test
+# build docker image
+./gradlew  :mapr-db-ojai:docker
+```
