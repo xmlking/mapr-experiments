@@ -1,31 +1,33 @@
+import com.palantir.gradle.docker.DockerExtension
+import org.gradle.jvm.tasks.Jar
+
 val reactorKotlinExtensions by project
 val maprVersion by project
 val maprOjaiVersion by project
 
 apply {
-    plugin("org.springframework.boot")
-    plugin("org.jetbrains.kotlin.jvm")
-    plugin("org.jetbrains.kotlin.plugin.spring")
-    plugin("org.jetbrains.kotlin.plugin.noarg")
-    plugin("io.spring.dependency-management")
+    plugin("com.palantir.docker")
 }
 
-//noArg {
-//    annotation("com.my.Annotation")
-//}
+val jar: Jar by tasks
+docker {
+    name = "${group}/${jar.baseName}:${jar.version}"
+    files(jar.outputs, file("src/main/docker/ssl_truststore"))
+    setDockerfile(file("src/main/docker/Dockerfile"))
+    buildArgs(mapOf(
+            "JAR_NAME" to jar.archiveName,
+            "PORT"   to  "8080",
+            "JAVA_OPTS" to "-Xms512m -Xmx1024m"
+    ))
+    pull(true)
+    dependsOn(tasks.findByName("build"))
+}
 
 dependencies {
-    compile(project(":mapr-commons"))
-    compile(kotlinModule("stdlib-jre8"))
-    compile(kotlinModule("reflect"))
+    compile(project(":shared"))
 
-    compile("org.springframework.boot:spring-boot-starter-webflux") {
-        exclude(module = "hibernate-validator")
-    }
-    compileOnly("org.springframework:spring-context-indexer")
     compile("com.mapr.db:maprdb:$maprVersion")
     compile("org.ojai:ojai:$maprOjaiVersion")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
 
     compile("io.projectreactor:reactor-kotlin-extensions:$reactorKotlinExtensions")
     testCompile("io.projectreactor.addons:reactor-test")
@@ -38,3 +40,10 @@ configurations.all {
     exclude("log4j","log4j")
     exclude("org.slf4j","slf4j-log4j12")
 }
+
+/**
+ * Configures the [docker][DockerExtension] project extension.
+ */
+val Project.docker get() = extensions.getByName("docker") as DockerExtension
+
+fun Project.docker(configure: DockerExtension.() -> Unit): Unit = extensions.configure("docker", configure)

@@ -1,43 +1,38 @@
-mapr-streams-example
-====================
-
-live-mapr-streaming-producer is live stream producer and live-mapr-streaming-websocket project is Streams consumer. 
-
-These projects are written using spring boot started and spring boot websocket. 
-
-The producer reads the test.csv , consolidates the data and publishes to the topic
-
-The consumer listens to the topic and rendors to the websocket which is registered.
-
-
-To run the consumer
-
-java -jar live-mapr-streaming-websocket-0.1.jar --spring.config.location=/home/mapr/live-mapr-streaming-websocket/application.properties 
-
-To run the producer
-
-java -jar live-mapr-streaming-producer-0.1.jar --spring.config.location=/home/mapr/live-mapr-streaming-producer/application.properties
-
-check by opening the browser http://localhost:8099 
+MapR Streams WebSocket
+======================
 
 ### Setup
 Install and fire up the Sandbox using the instructions here: http://maprdocs.mapr.com/home/SandboxHadoop/c_sandbox_overview.html. 
-https://github.com/caroljmcdonald/live-mapr-streaming-websocket
-
-### Building 
-```bash
-./gradlew  :mapr-streams-websocket:build
-# build docker image
-./gradlew  :mapr-streams-websocket:docker
-```
-
-### Run 
+ 
+### Run
+> use `./gradlew` instead of `gradle` if you didn't installed `gradle`
 > start kafka http://docs.confluent.io/current/quickstart.html
 ```bash
-./gradlew  :mapr-streams-websocket:bootRun
+gradle mapr-streams-websocket:bootRun
+# run with `dev` profile. loads application-dev.properties
+SPRING_PROFILES_ACTIVE=dev gradle mapr-streams-websocket:bootRun
+```
+### Test
+```bash
+gradle mapr-streams-websocket:test
+```
+### Build
+```bash
+gradle mapr-streams-websocket:build
+# build without running tests
+gradle mapr-streams-websocket:build -x test
 # build docker image
-./gradlew  :mapr-streams-websocket:docker
+gradle mapr-streams-websocket:docker
 ```
 
+### Docker local Run
+```bash
+docker run -it -e MAPR_CLUSTER=cluster1 -e MAPR_CLDB_HOSTS=192.168.56.101 -e MAPR_CONTAINER_USER=mapr mapr/mapr-streams-websocket:0.1.0-SNAPSHOT
+docker run -it --cap-add SYS_ADMIN --cap-add SYS_RESOURCE --device /dev/fuse -e MAPR_CLUSTER=cluster1 -e MAPR_CLDB_HOSTS=192.168.56.101 -e MAPR_CONTAINER_USER=mapr -e MAPR_MOUNT_PATH=/mapr mapr/mapr-streams-websocket:0.1.0-SNAPSHOT
+
+# $MAPR_MOUNT_PATH/$MAPR_CLUSTER directory  will be created.
+```
+
+### API
 > send message 
-http://localhost:9000/send?key=myKey&message=myMessage
+http://localhost:8081/send?key=myKey&message=myMessage

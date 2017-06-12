@@ -20,18 +20,18 @@ gradle :mapr-streams-websocket:bootRun
 ```
 ### Testing
 ```bash
-./gradlew :mapr-db-ojai:test
+gradle test
 ```
 ### Building 
 ```bash
-./gradlew :mapr-db-ojai:build
+gradle build
+gradle :mapr-db-ojai:build -x test
 ```
 
 ### Gradle Commands
 ```bash
 # upgrade project gradle version
-gradle wrapper --gradle-version 4.0
-gradle wrapper --gradle-distribution-url https://repo.gradle.org/gradle/dist-snapshots/gradle-script-kotlin-4.0-20170518042627+0000-all.zip
+gradle wrapper --gradle-version=4.0-rc-2
 # gradle daemon status 
 gradle --status
 gradle --stop

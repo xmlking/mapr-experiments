@@ -1,2 +1,2 @@
-include 'mapr-db-ojai', 'mapr-streams-websocket', 'mapr-commons'
+include 'shared', 'mapr-db-ojai', 'mapr-streams-websocket'
 
