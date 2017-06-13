@@ -11,6 +11,11 @@ http://<sandbox_ip>:8443/mcs
 # to delete table
 maprcli table delete -path /user/mapr/tables/my_users
 ```
+> copy **ssl_truststore** from MapR cluster node to project's docker folder.
+```bash
+scp mape@sandbox:/opt/mapr/conf/ssl_truststore mapr-db-ojai/src/main/docker/
+```
+> Don't check-in secure files to Git.
 
 ### Run
 > use `./gradlew` instead of `gradle` if you didn't installed `gradle`
