@@ -1,5 +1,7 @@
 package org.xmlking.mapr
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.mapr.db.MapRDB
 import com.mapr.db.Table
 import com.mapr.db.exceptions.DBException
@@ -7,30 +9,31 @@ import org.ojai.DocumentStream
 import org.ojai.store.QueryCondition.Op.EQUAL
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Repository
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.io.IOException
-import java.time.Instant
 import java.util.*
 import javax.annotation.PostConstruct
 
 
 @Repository
 class UserRepository(@Value("\${user.table.name}") val userTableName: String,
-                     val dbHelper: MapRJsonDBHelper) {
+                     val dbHelper: MapRJsonDBHelper,
+                     val objectMapper: ObjectMapper) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     private lateinit var userTable: Table
 
     fun initData() {
-//        if (count().block() == 0L) {
-//            val usersResource = ClassPathResource("data/users.json")
-//            val users: List<User> = objectMapper.readValue(usersResource.inputStream)
-//            users.forEach { save(it).block() }
-//            logger.info("Users data initialization complete")
-//        }
+        if (count().block() == 0) {
+            val usersResource = ClassPathResource("data/users.json")
+            val users: List<User> = objectMapper.readValue(usersResource.inputStream)
+            users.forEach { create(it).block() }
+            logger.info("Users data initialization complete")
+        }
     }
 
     @PostConstruct
@@ -42,6 +45,9 @@ class UserRepository(@Value("\${user.table.name}") val userTableName: String,
             e.printStackTrace()
         }
 
+    }
+    fun count() : Mono<Int> {
+        return Mono.just(userTable.find().count())
     }
 
     fun list(): Flux<User> {

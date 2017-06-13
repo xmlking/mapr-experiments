@@ -8,8 +8,6 @@ import org.springframework.web.reactive.function.server.ServerResponse.*
 import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.bodyToMono
 import reactor.core.publisher.Mono
-import reactor.core.publisher.toMono
-import java.net.URI.create
 
 @Component
 class UserHandler(val repository: UserRepository,
@@ -18,14 +16,14 @@ class UserHandler(val repository: UserRepository,
     fun list(req: ServerRequest) = ok().json().body(repository.list())
 
     fun get0(request: ServerRequest) = {
-        val resource = request.pathVariable("userId")
+        val resource = request.pathVariable("id")
         repository.findOne(resource)
                 .map { ok().json().body(Mono.just(it)) }
                 .defaultIfEmpty(status(HttpStatus.NOT_FOUND).body(errorHandler.notFound(resource)))
     }
 
     fun get(request: ServerRequest): Mono<ServerResponse> {
-        val resource = request.pathVariable("userId")
+        val resource = request.pathVariable("id")
         return Mono.just(resource)
                 .flatMap { repository.findOne(it) }
                 .flatMap { ok().json().body(Mono.just(it)) }
@@ -38,12 +36,12 @@ class UserHandler(val repository: UserRepository,
             .flatMap { ok().json().body(Mono.just(it)) }
 
     fun update(request: ServerRequest) = request.bodyToMono<User>()
-            .flatMap { repository.create(it) }
+            .flatMap { repository.update(it) }
             .flatMap { ok().json().body(Mono.just(it)) }
             .switchIfEmpty(status(HttpStatus.NOT_FOUND).body(errorHandler.notFound("User Not Found")))
 
     fun delete0(request: ServerRequest) = {
-        val resource = request.pathVariable("userId")
+        val resource = request.pathVariable("id")
         repository.delete(resource)
                 .map { accepted().json().body(Mono.just(it)) }
                 .defaultIfEmpty(status(HttpStatus.NOT_FOUND).body(errorHandler.notFound(resource)))
@@ -51,7 +49,7 @@ class UserHandler(val repository: UserRepository,
 
     fun delete(request: ServerRequest) = accepted()
             .json()
-            .body(repository.delete(request.pathVariable("userId")))
+            .body(repository.delete(request.pathVariable("id")))
 
 }
 

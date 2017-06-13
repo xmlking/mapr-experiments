@@ -18,7 +18,7 @@ class ApiRoutes(val userHandler: UserHandler) {
             // users
             "/users".nest {
                 GET("/", userHandler::list)
-                GET("/{userId}", userHandler::get)
+                GET("/{id}", userHandler::get)
                 POST("/", userHandler::create)
                 PUT("/", userHandler::update)
                 DELETE("/{id}", userHandler::delete)

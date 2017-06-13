@@ -63,7 +63,7 @@ subprojects {
     }
 
     noArg {
-        annotation("org.springframework.data.mongodb.core.mapping.Document")
+        annotation("org.xmlking.mapr.Mapr")
     }
 
     tasks.withType<BootRun> {
