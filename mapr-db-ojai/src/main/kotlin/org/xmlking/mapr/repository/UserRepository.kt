@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono
 import java.io.IOException
 import java.util.*
 import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 
 
 @Repository
@@ -37,15 +38,20 @@ class UserRepository(@Value("\${user.table.name}") val userTableName: String,
     }
 
     @PostConstruct
-    fun getTableHandler() {
+    fun init() {
         try {
             userTable = dbHelper.getTable(userTableName)
         } catch (e: IOException) {
             // TODO Auto-generated catch block
             e.printStackTrace()
         }
-
     }
+
+    @PreDestroy
+    fun destroy() {
+        println("in UserRepository cleanUp")
+    }
+
     fun count() : Mono<Int> {
         return Mono.just(userTable.find().count())
     }

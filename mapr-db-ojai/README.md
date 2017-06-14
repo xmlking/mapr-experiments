@@ -32,7 +32,7 @@ gradle mapr-db-ojai:test
 ```bash
 gradle mapr-db-ojai:build
 # skip tests. You may need skip test step as tests need MapR connection. 
-gradle :mapr-db-ojai:build -x test
+gradle mapr-db-ojai:build -x test
 # build docker image
 gradle mapr-db-ojai:docker -x test
 ```
