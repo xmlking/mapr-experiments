@@ -18,7 +18,7 @@ This demo application showcases usage of **MapR OJAI API**, **MapR-Streams** to 
 
 ### Prerequisites
 1. MapR Sandbox [Setup Instructions](./docs/MapR.md)
-2. Docker for Mac [Installation](https://docs.docker.com/docker-for-mac/install/)
+2. Docker for Mac [Setup Instructions](./docs/Docker.md)
 3. Gradle 4 (Install via [sdkman](http://sdkman.io/))
 
 > See [mapr-db-ojai](/mapr-db-ojai/), [mapr-streams-websocket](/mapr-streams-websocket) sub projects for more documentation. 
@@ -45,7 +45,7 @@ gradle build -x test
 ### Gradle Commands
 ```bash
 # upgrade project gradle version
-gradle wrapper --gradle-version=4.0-rc-2
+gradle wrapper --gradle-version=4.0
 # gradle daemon status 
 gradle --status
 gradle --stop

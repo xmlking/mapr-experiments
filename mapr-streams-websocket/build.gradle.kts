@@ -28,14 +28,15 @@ dependencies {
     compile(project(":shared"))
 
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile("org.webjars:webjars-locator:0.32")
     compile("org.webjars:sockjs-client:1.1.2")
     compile("org.webjars:stomp-websocket:2.3.3")
     compile("org.webjars:bootstrap:4.0.0-alpha.6-1")
     compile("org.webjars:jquery:3.2.0")
-
+    // with MapR Streams
 //    compileOnly("com.mapr.streams:mapr-streams:$maprVersion")
 //    compile("org.apache.kafka:kafka-clients:$maprKafkaVersion")
+//    compile("org.springframework.kafka:spring-kafka:$springKafkaVersion")
+    // with Apache Kafka
     compile("org.springframework.kafka:spring-kafka")
 
     compile("io.projectreactor:reactor-kotlin-extensions:$reactorKotlinExtensions")
