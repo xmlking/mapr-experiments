@@ -39,7 +39,7 @@ gradle mapr-db-ojai:docker -x test
 
 ### Docker local Run
 ```bash
-docker run -it -p 8082:8080 -e MAPR_CLUSTER=cluster1 -e MAPR_CLDB_HOSTS=192.168.56.101 -e MAPR_CONTAINER_USER=mapr -e MAPR_CONTAINER_UID=2000 -e MAPR_CONTAINER_GID=2000 -e MAPR_CONTAINER_GROUP=mapr mapr/mapr-db-ojai:0.1.0-SNAPSHOT
+# Non-Secure Cluster with FUSE-Based POSIX Client (i.e., MAPR_MOUNT_PATH, SYS_ADMIN, SYS_RESOURCE etc)
 docker run -it -p 8082:8080 \
         --cap-add SYS_ADMIN --cap-add SYS_RESOURCE --device /dev/fuse  \
        -e MAPR_CLUSTER=cluster1 \
@@ -51,7 +51,20 @@ docker run -it -p 8082:8080 \
        -e MAPR_MOUNT_PATH=/mapr \
        mapr/mapr-db-ojai:0.1.0-SNAPSHOT
 
-# $MAPR_MOUNT_PATH/$MAPR_CLUSTER directory  will be created.
+# $MAPR_MOUNT_PATH/$MAPR_CLUSTER directory  will be mounted.
+
+# Secure Cluster with FUSE-Based POSIX Client (i.e., MAPR_TICKETFILE_LOCATION)
+docker run -it -p 8082:8080 \
+        --cap-add SYS_ADMIN --cap-add SYS_RESOURCE --device /dev/fuse  \
+       -e MAPR_CLUSTER=cluster1 \
+       -e MAPR_CLDB_HOSTS=192.168.56.101 \
+       -e MAPR_CONTAINER_USER=mapr \
+       -e MAPR_CONTAINER_UID=2000 \
+       -e MAPR_CONTAINER_GID=2000 \
+       -e MAPR_CONTAINER_GROUP=mapr \
+       -e MAPR_MOUNT_PATH=/mapr \
+       -e MAPR_TICKETFILE_LOCATION=/tmp/mapr_ticket \
+       mapr/mapr-db-ojai:0.1.0-SNAPSHOT
 ```
 
 ### API
@@ -63,6 +76,7 @@ docker run -it -p 8082:8080 \
 
 ### Reference
 
+* http://maprdocs.mapr.com/home/AdvancedInstallation/RunningtheMapRPACC.html
 * https://mapr.com/blog/getting-started-mapr-client-container/
 * https://github.com/mapr-demos/mapr-pacc-sample
-* http://maprdocs.mapr.com/home/AdvancedInstallation/RunningtheMapRPACC.html
+* https://github.com/kirankumar-mahi/mapr-db-json

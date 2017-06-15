@@ -46,6 +46,7 @@ gradle mapr-streams-websocket:docker
 
 ### Docker local Run
 ```bash
+# Non-Secure Cluster without FUSE-Based POSIX Client
  docker run -it -p 8081:8080 \
        -e MAPR_CLUSTER=cluster1 \
        -e MAPR_CLDB_HOSTS=192.168.56.101 \
@@ -54,8 +55,6 @@ gradle mapr-streams-websocket:docker
        -e MAPR_CONTAINER_GID=2000 \
        -e MAPR_CONTAINER_GROUP=mapr \
         mapr/mapr-streams-websocket:0.1.0-SNAPSHOT
-       
-# $MAPR_MOUNT_PATH/$MAPR_CLUSTER directory  will be created.
 ```
 
 ### API
@@ -65,5 +64,7 @@ http://localhost:8081/send?key=myKey&message=myMessage
 ### Reference
 
 * https://mapr.com/blog/getting-started-mapr-client-container/
+* https://github.com/mapr-demos/mapr-pacc-sample
+* http://maprdocs.mapr.com/home/AdvancedInstallation/RunningtheMapRPACC.html
 * https://github.com/kirankumar-mahi/mapr-streams-example
 * https://github.com/caroljmcdonald/live-mapr-streaming-websocket/tree/master

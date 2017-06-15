@@ -44,8 +44,7 @@ class Producer(@Value("\${spring.kafka.template.default-topic}") private val top
 
 @Component
 class Consumer(@Value("\${spring.kafka.template.default-topic}") private val topic: String) {
-
-    @KafkaListener(id = "consumerTest", topics = arrayOf("test"))
+    @KafkaListener(id = "consumerTest", topics = arrayOf("\${spring.kafka.template.default-topic}"))
     fun consume(@Header(KafkaHeaders.RECEIVED_MESSAGE_KEY) key: String, @Payload message: String) {
         println("Consumer:  $key : $message")
     }
