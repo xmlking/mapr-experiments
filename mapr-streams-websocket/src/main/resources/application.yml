@@ -6,9 +6,14 @@ spring:
       concurrency: 10
     producer:
       bootstrapServers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       bootstrapServers: localhost:9092
       group-id: app
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       enableAutoCommit: false
     template:
+#      default-topic: /user/mapr/streams/my_stream:test
       default-topic: test

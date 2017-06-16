@@ -21,7 +21,6 @@ import javax.annotation.PreDestroy
 
 @Repository
 class UserRepository(@Value("\${user.table.name}") val userTableName: String,
-                     val dbHelper: MapRJsonDBHelper,
                      val objectMapper: ObjectMapper) {
 
     private val logger = LoggerFactory.getLogger(this.javaClass)
@@ -40,9 +39,12 @@ class UserRepository(@Value("\${user.table.name}") val userTableName: String,
     @PostConstruct
     fun init() {
         try {
-            userTable = dbHelper.getTable(userTableName)
-        } catch (e: IOException) {
-            // TODO Auto-generated catch block
+            if (!MapRDB.tableExists(userTableName)) {
+                userTable = MapRDB.createTable(userTableName)
+            } else {
+                userTable = MapRDB.getTable(userTableName)
+            }
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
